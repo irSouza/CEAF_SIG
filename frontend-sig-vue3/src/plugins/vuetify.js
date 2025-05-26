@@ -1,0 +1,1 @@
+import 'vuetify/styles'; import { createVuetify } from 'vuetify'; import * as components from 'vuetify/components'; import * as directives from 'vuetify/directives'; export default createVuetify({components,directives,theme:{defaultTheme:'light',themes:{light:{colors:{primary:'#145efc',secondary:'#d9a5f7',background:'#f2f4f8'}}}}});
