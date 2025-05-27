@@ -8,17 +8,17 @@
         </v-col>
       </v-row>
 
-      <v-row dense>
+      <v-row dense v-if="showMenuButtons" justify="center">
         <v-col
           v-for="item in sigMenu"
-          :key="item.to"
+          :key="item.label"
           cols="12"
           md="4"
         >
           <v-card
             class="menu-block"
             elevation="6"
-            @click="go(item.to)"
+            @click="go(item)"
           >
             <v-card-title>
               <v-icon class="mr-3">{{ item.icon }}</v-icon>
@@ -35,11 +35,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 
 const router = useRouter()
 const auth = useAuthStore()
+
+const showMenuButtons = ref(true)
 
 const sigMenu = [
   {
@@ -59,25 +62,42 @@ const sigMenu = [
     to: '/sig/pending',
     icon: 'mdi-clock-alert',
     subtitle: 'Ver reclamações não concluídas'
+  },
+  {
+    label: 'Sair',
+    to: '',            // sem rota, pois usará ação
+    icon: 'mdi-logout',
+    subtitle: 'Sair do sistema',
+    action: logout
   }
 ]
 
-function go(path) {
-  router.push(path)
+function go(item) {
+  if (item.action) {
+    item.action()
+  } else {
+    router.push(item.to)
+  }
+}
+
+function logout() {
+  auth.logout()      // limpa store e localStorage
+  router.push('/')   // redireciona para login
 }
 </script>
+
 
 <style scoped>
 .menu-page {
   background: #f2f4f8;
-  min-height: calc(100vh - 64px); /* subtrai altura do app-bar */
+  min-height: calc(100vh - 64px);
   padding-top: 32px;
 }
 
 .menu-block {
   cursor: pointer;
   border-radius: 12px;
-  transition: transform .2s, box-shadow .2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   background: #fff;
   height: 150px;
   display: flex;

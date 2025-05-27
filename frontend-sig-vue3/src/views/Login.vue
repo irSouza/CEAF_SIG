@@ -1,7 +1,6 @@
 <template>
   <v-container fluid class="login-container">
     <v-card class="login-card" elevation="12">
-      <!-- Logo centralizado -->
       <v-card-title class="login-card__header">
         <v-img
           src="/logo.png"
@@ -51,6 +50,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import { useAuthStore } from '@/store/auth'
 
 const email = ref('')
@@ -60,19 +60,39 @@ const auth = useAuthStore()
 
 async function onLogin() {
   try {
-    await auth.login({ email: email.value, password: password.value })
-    if (auth.user.role === 'SIG') {
-      router.push('/sig')
+    const res = await axios.post('http://localhost:5000/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+
+    const token = res.data.token
+    localStorage.setItem('token', token)
+
+    // Decodifica o JWT para extrair dados do usuário
+    const payload = JSON.parse(atob(token.split('.')[1]))
+
+    // Atualiza o estado do store auth
+    auth.setUser({
+      token,
+      role: payload.role,
+      name: payload.name
+    })
+
+    // Redireciona conforme role
+    if (payload.role === 'SIG') {
+      router.push('/sig') // Rota SIG
     } else {
-      router.push('/client')
+      router.push('/client') // Rota Client
     }
-  } catch {
+  } catch (err) {
     alert('Credenciais inválidas')
+    console.error(err)
   }
 }
 </script>
 
 <style scoped>
+/* (Mantém seu estilo atual) */
 .login-container {
   height: 100vh;
   display: flex;
@@ -87,7 +107,6 @@ async function onLogin() {
   overflow: hidden;
 }
 
-/* Centraliza o header e o logo dentro do card */
 .login-card__header {
   display: flex;
   justify-content: center;
@@ -96,17 +115,14 @@ async function onLogin() {
   background-color: #ffffff;
 }
 
-/* Ajusta o logo para ficar bem centralizado */
 .login-card__logo {
   margin: 0 auto;
 }
 
-/* Espaçamento interno do corpo do card */
 .login-card__body {
   padding: 24px;
 }
 
-/* Botão em destaque */
 .login-btn {
   margin-top: 24px;
 }
