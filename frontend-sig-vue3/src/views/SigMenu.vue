@@ -1,37 +1,36 @@
 <template>
-  <v-main app class="menu-page">
-    <v-container fluid>
-      <v-row class="mb-8" justify="center">
-        <v-col cols="12" class="text-center">
-          <h1>Bem-vindo, {{ auth.user.name }}</h1>
-          <p>Escolha uma opção abaixo:</p>
-        </v-col>
-      </v-row>
+  <v-container fluid class="menu-page">
+    <v-row class="mb-8" justify="center">
+      <v-col cols="12" class="text-center">
+        <h1 v-if="auth.user">Bem-vindo, {{ auth.user.name }}</h1>
+        <h1 v-else>Saindo...</h1>
+        <p>Escolha uma opção abaixo:</p>
+      </v-col>
+    </v-row>
 
-      <v-row dense v-if="showMenuButtons" justify="center">
-        <v-col
-          v-for="item in sigMenu"
-          :key="item.label"
-          cols="12"
-          md="4"
+    <v-row dense v-if="showMenuButtons" justify="center">
+      <v-col
+        v-for="item in sigMenu"
+        :key="item.label"
+        cols="12"
+        md="4"
+      >
+        <v-card
+          class="menu-block"
+          elevation="6"
+          @click="go(item)"
         >
-          <v-card
-            class="menu-block"
-            elevation="6"
-            @click="go(item)"
-          >
-            <v-card-title>
-              <v-icon class="mr-3">{{ item.icon }}</v-icon>
-              <span class="menu-block__title">{{ item.label }}</span>
-            </v-card-title>
-            <v-card-text class="menu-block__subtitle">
-              {{ item.subtitle }}
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-main>
+          <v-card-title>
+            <v-icon class="mr-3">{{ item.icon }}</v-icon>
+            <span class="menu-block__title">{{ item.label }}</span>
+          </v-card-title>
+          <v-card-text class="menu-block__subtitle">
+            {{ item.subtitle }}
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -41,8 +40,12 @@ import { useAuthStore } from '@/store/auth'
 
 const router = useRouter()
 const auth = useAuthStore()
-
 const showMenuButtons = ref(true)
+
+async function logout() {
+  await auth.logout()
+  router.push('/')
+}
 
 const sigMenu = [
   {
@@ -65,7 +68,7 @@ const sigMenu = [
   },
   {
     label: 'Sair',
-    to: '',            // sem rota, pois usará ação
+    to: '',
     icon: 'mdi-logout',
     subtitle: 'Sair do sistema',
     action: logout
@@ -79,13 +82,7 @@ function go(item) {
     router.push(item.to)
   }
 }
-
-function logout() {
-  auth.logout()      // limpa store e localStorage
-  router.push('/')   // redireciona para login
-}
 </script>
-
 
 <style scoped>
 .menu-page {

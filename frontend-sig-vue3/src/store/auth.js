@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useComplaintsStore } from './complaints' // Certifique-se que o caminho esteja correto
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -29,8 +30,15 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       this.token = null
-      this.user = { role: null, name: null }
+      this.user.role = null
+      this.user.name = null
       localStorage.removeItem('token')
+
+      // Reinicializa a store de reclamações, se existir
+      const complaintStore = useComplaintsStore()
+      if (complaintStore?.clear) {
+        complaintStore.clear()
+      }
     }
   }
 })

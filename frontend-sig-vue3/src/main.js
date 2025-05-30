@@ -1,9 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
 import { createPinia } from 'pinia'
-import { useAuthStore } from '@/store/auth'
+import router from './router'
 import vuetify from './plugins/vuetify'
+
+import { useAuthStore } from '@/store/auth'
+
 import './styles/variables.scss'
 import './styles/global.scss'
 
@@ -13,7 +15,7 @@ const pinia = createPinia()
 app.use(pinia)
 
 const auth = useAuthStore(pinia)
-auth.loadFromStorage() // Carrega token e user do localStorage no início
+auth.loadFromStorage()
 
 app.use(router)
 app.use(vuetify)

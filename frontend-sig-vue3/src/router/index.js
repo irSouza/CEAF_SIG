@@ -5,7 +5,7 @@ import Login from '@/views/Login.vue'
 import ClientLayout from '@/views/ClientLayout.vue'
 import SigLayout from '@/views/SigLayout.vue'
 
-// Import das views client e sig, ou lazy loading
+// Lazy loading de componentes
 const ClientMenu = () => import('@/views/ClientMenu.vue')
 const DashboardClient = () => import('@/views/DashboardClient.vue')
 const ComplaintFormView = () => import('@/views/ComplaintFormView.vue')
@@ -53,16 +53,20 @@ const router = createRouter({
   routes
 })
 
+// Guard global de navegação
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
 
   if (to.name === 'Login') return next()
 
-  if (to.meta.requiresAuth && !auth.token) {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiredRole = to.matched.find(record => record.meta.role)?.meta.role
+
+  if (requiresAuth && !auth.token) {
     return next({ name: 'Login' })
   }
 
-  if (to.meta.role && auth.user.role !== to.meta.role) {
+  if (requiredRole && auth.user?.role !== requiredRole) {
     return next({ name: 'Login' })
   }
 

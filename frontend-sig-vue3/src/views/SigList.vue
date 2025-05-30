@@ -1,28 +1,28 @@
 <template>
-  <v-container>
-    <h2 class="mb-4">Todas RNCs</h2>
-    <div v-if="!complaints.length" class="text-center grey--text">
-      Nenhuma reclamação encontrada.
-    </div>
-    <ComplaintTable v-else :items="complaints" />
+  <v-container class="pa-4">
+    <h2 class="mb-6">Todas as Reclamações</h2>
+
+    <ComplaintTable :complaints="complaints" />
   </v-container>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import ComplaintTable from '@/components/ComplaintTable.vue'
 import { useComplaintsStore } from '@/store/complaints'
 
 const store = useComplaintsStore()
-const complaints = store.list
+const complaints = ref([])
 
-onMounted(() => {
-  store.listAll().catch(console.error)
+onMounted(async () => {
+  await store.listAll()
+  complaints.value = store.complaints
 })
 </script>
 
 <style scoped>
 h2 {
-  color: #145efc;
+  font-weight: 600;
+  color :#145efc;
 }
 </style>
