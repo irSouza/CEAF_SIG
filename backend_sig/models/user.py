@@ -7,7 +7,7 @@ class User:
         self.name = data['name']
         self.email = data['email']
         self.password_hash = data['passwordHash']
-        self.role = data.get('role', 'cliente')
+        self.role = data.get('role', 'client')
         self.created_at = data.get('createdAt', datetime.utcnow())
 
     def to_dict(self):
