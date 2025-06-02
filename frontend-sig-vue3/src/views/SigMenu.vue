@@ -55,12 +55,6 @@ const sigMenu = [
     subtitle: 'Visualizar todas as reclamações'
   },
   {
-    label: 'Dashboard',
-    to: '/sig/dashboard',
-    icon: 'mdi-chart-bar',
-    subtitle: 'Análise mensal das reclamações'
-  },
-  {
     label: 'Pendentes',
     to: '/sig/pending',
     icon: 'mdi-clock-alert',

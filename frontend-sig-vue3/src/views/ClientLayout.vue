@@ -57,14 +57,11 @@ const clientMenu = [
 ]
 
 function navigate(path) {
-  // Evita erro de navegação duplicada e implementa recarregamento se já estiver na rota
   if (route.path.startsWith(path)) {
     if (path === '/client/list') {
-      // Recarrega a lista de RNCs se o usuário clicar novamente em "Minhas RNCs"
       complaintStore.listAll && complaintStore.listAll()
     }
     if (path === '/client/form') {
-      // Força recriação do componente de formulário (limpeza) ao clicar novamente em "Nova RNC"
       router.push({ path, query: { refresh: Date.now() } }).catch(() => {})
     }
     return

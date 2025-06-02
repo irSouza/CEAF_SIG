@@ -2,7 +2,7 @@
   <v-container class="pa-4">
     <h2 class="mb-6">Reclamações Pendentes</h2>
 
-    <ComplaintTable :complaints="pendingComplaints" />
+    <ComplaintTable :items="pendingComplaints" />
   </v-container>
 </template>
 
@@ -28,7 +28,6 @@ const pendingComplaints = computed(() =>
   complaints.value.filter(c => c.status === 'pending')
 )
 </script>
-
 
 <style scoped>
 h2 {

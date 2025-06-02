@@ -83,14 +83,12 @@ async function logout() {
 
 const sigMenu = [
   { label: 'Todas RNCs', to: '/sig/list', icon: 'mdi-format-list-bulleted' },
-  { label: 'Dashboard', to: '/sig/dashboard', icon: 'mdi-chart-bar' },
-  { label: 'Pendentes', to: '/sig/pending', icon: 'mdi-clock-alert' },
+  { label: 'Pendentes',  to: '/sig/pending', icon: 'mdi-clock-alert' }
 ]
 
 const pageTitle = computed(() => {
   const p = route.path
   if (p.startsWith('/sig/list')) return 'Todas RNCs'
-  if (p.startsWith('/sig/dashboard')) return 'Dashboard'
   if (p.startsWith('/sig/pending')) return 'Pendentes'
   return 'Menu'
 })

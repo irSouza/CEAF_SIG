@@ -2,7 +2,7 @@
   <v-container class="pa-4">
     <h2 class="mb-6">Todas as Reclamações</h2>
 
-    <ComplaintTable :complaints="complaints" />
+    <ComplaintTable :items="complaints" />
   </v-container>
 </template>
 
@@ -23,6 +23,6 @@ onMounted(async () => {
 <style scoped>
 h2 {
   font-weight: 600;
-  color :#145efc;
+  color: #145efc;
 }
 </style>
