@@ -32,12 +32,17 @@ def create_complaint():
         dest = os.path.join(current_app.config['UPLOAD_FOLDER'], name)
         f.save(dest)
         paths.append(dest)
+
+    # Preenchimento automático
     data.update({
         'attachments': paths,
         'customerId': request.user.get('sub'),
         'createdAt': datetime.utcnow(),
+        'firstContactAt': datetime.utcnow(),
+        'fy': datetime.utcnow().year,
         'status': 'pending'
     })
+
     comp = Complaint(data)
     mongo_client.db.complaints.insert_one(comp.to_dict())
     return jsonify({'message': 'Reclamação criada'}), 201
@@ -50,7 +55,6 @@ def get_complaint(cid):
     if not doc:
         return jsonify({'message': 'Não encontrado'}), 404
 
-    # Restrição: cliente só acessa sua própria reclamação
     if user.get('role') != 'SIG' and str(doc.get('customerId')) != user.get('sub'):
         return jsonify({'message': 'Acesso negado'}), 403
 

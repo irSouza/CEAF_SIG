@@ -6,24 +6,35 @@ export const useComplaintsStore = defineStore('complaints', {
     // Lista de reclamações do usuário
     complaints: []
   }),
+
   actions: {
     // Busca todas as RNCs do usuário logado
     async listAll() {
-      this.complaints = (await api.get('/complaints')).data
+      try {
+        const response = await api.get('/complaints')
+        this.complaints = response.data
+      } catch (error) {
+        console.error('Erro ao buscar RNCs:', error)
+        this.complaints = []
+      }
     },
+
     // Cadastra uma nova RNC
     async create(data) {
-      const formData = new FormData()
-      Object.entries(data).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          // Anexa múltiplos arquivos (se houver)
-          value.forEach(file => formData.append('attachments', file))
-        } else {
-          formData.append(key, value)
-        }
-      })
-      // Envia a nova RNC para o backend
-      await api.post('/complaints', formData)
+      try {
+        const formData = new FormData()
+        Object.entries(data).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            value.forEach(file => formData.append('attachments', file))
+          } else {
+            formData.append(key, value)
+          }
+        })
+        await api.post('/complaints', formData)
+      } catch (error) {
+        console.error('Erro ao criar RNC:', error)
+        throw error
+      }
     }
   }
 })

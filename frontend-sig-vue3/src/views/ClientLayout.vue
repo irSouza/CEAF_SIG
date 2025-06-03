@@ -30,7 +30,7 @@
     <v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
   </v-app-bar>
 
-  <v-main app class="pa-4 grey lighten-4">
+  <v-main app class="pt-12 pa-6 grey lighten-4">
     <router-view />
   </v-main>
 </template>
@@ -83,7 +83,7 @@ const pageTitle = computed(() => {
 }
 .client-menu-item {
   cursor: pointer;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 .client-menu-item--active {
   background-color: rgba(20, 94, 252, 0.15) !important;

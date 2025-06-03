@@ -5,11 +5,13 @@ import Login from '@/views/Login.vue'
 import ClientLayout from '@/views/ClientLayout.vue'
 import SigLayout from '@/views/SigLayout.vue'
 
-// Lazy loading de componentes
+// Lazy loading de componentes CLIENTE
 const ClientMenu = () => import('@/views/ClientMenu.vue')
+const ClientComplaintList = () => import('@/views/ClientComplaintList.vue') // ✅ caminho corrigido
 const ComplaintFormView = () => import('@/views/ComplaintFormView.vue')
 const ComplaintDetail = () => import('@/views/ComplaintDetail.vue')
 
+// Lazy loading de componentes SIG
 const SigMenu = () => import('@/views/SigMenu.vue')
 const SigList = () => import('@/views/SigList.vue')
 const SigPending = () => import('@/views/SigPending.vue')
@@ -24,6 +26,7 @@ const routes = [
     meta: { requiresAuth: true, role: 'client' },
     children: [
       { path: '', name: 'ClientMenu', component: ClientMenu },
+      { path: 'list', name: 'ClientComplaintList', component: ClientComplaintList },
       { path: 'form', name: 'ComplaintForm', component: ComplaintFormView },
       { path: 'detail/:id', name: 'ClientDetail', component: ComplaintDetail, props: true }
     ]
