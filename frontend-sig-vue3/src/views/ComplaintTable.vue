@@ -1,120 +1,64 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="items"
-    item-value="_id"
-    class="elevation-1"
-    no-data-text="Nenhuma reclamação encontrada"
-  >
-    <!-- Status -->
-    <template #item-status="{ item }">
-      <v-chip :color="statusColor(item.status)" dark>
-        {{ statusLabel(item.status) }}
-      </v-chip>
-    </template>
+  <v-container class="py-6">
+    <v-card class="elevation-2">
+      <v-card-title class="text-h6 text-primary">
+        Minhas RNCs
+      </v-card-title>
 
-    <!-- Data -->
-    <template #item-createdAt="{ item }">
-      {{ formatDate(item.createdAt) }}
-    </template>
-
-    <!-- Ações -->
-    <template #item-actions="{ item }">
-      <v-btn icon @click="abrirDetalhes(item._id)">
-        <v-icon>mdi-eye</v-icon>
-      </v-btn>
-    </template>
-  </v-data-table>
-
-  <!-- Diálogo de Detalhes -->
-  <v-dialog v-model="dialog" max-width="700px">
-    <v-card>
-      <v-card-title>Detalhes da Reclamação</v-card-title>
       <v-card-text>
-        <v-list v-if="rncData">
-          <v-list-item
-            v-for="(valor, chave) in rncSemAttachments"
-            :key="chave"
-            >
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          item-value="_id"
+          dense
+          fixed-header
+          height="500px"
+          class="elevation-1"
+          no-data-text="Nenhuma reclamação encontrada"
+        >
+          <!-- STATUS COM CHIP -->
+          <template #item-status="{ item }">
+            <v-chip :color="statusColor(item.status)" dark small>
+              {{ statusLabel(item.status) }}
+            </v-chip>
+          </template>
 
-            <v-list-item-content>
-              <strong>{{ formatLabel(chave) }}:</strong> {{ formatValue(valor) }}
-            </v-list-item-content>
-          </v-list-item>
+          <!-- DATA FORMATADA -->
+          <template #item-createdAt="{ item }">
+            {{ formatDate(item.createdAt) }}
+          </template>
 
-          <!-- Anexos -->
-          <div v-if="rncData.attachments && rncData.attachments.length">
-            <h4>Anexos:</h4>
-            <v-img
-              v-for="(url, i) in rncData.attachments"
-              :key="i"
-              :src="`http://localhost:5000/${url}`"
-              max-width="100%"
-              class="mb-3"
-            />
-          </div>
-        </v-list>
-        <div v-else>Carregando...</div>
+          <!-- AÇÕES -->
+          <template #item-actions="{ item }">
+            <v-btn icon @click="abrirDetalhes(item._id)" aria-label="Ver detalhes">
+              <v-icon>mdi-eye</v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text color="primary" @click="dialog = false">Fechar</v-btn>
-      </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-container>
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue'
-import axios from 'axios'
-import { computed } from 'vue'
-
-const rncSemAttachments = computed(() => {
-  if (!rncData.value) return {}
-  const { attachments, ...resto } = rncData.value
-  return resto
-})
-
+import { defineProps } from 'vue'
 
 const props = defineProps({
   items: Array
 })
 
-const dialog = ref(false)
-const rncData = ref(null)
-
-async function abrirDetalhes(id) {
-  dialog.value = true
-  rncData.value = null
-  try {
-    const response = await axios.get(`http://localhost:5000/complaints/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    const { _id, ...dadosSemId } = response.data
-    rncData.value = dadosSemId
-  } catch (err) {
-    console.error('Erro ao buscar detalhes:', err)
-    rncData.value = { erro: 'Não foi possível carregar os dados.' }
-  }
+function abrirDetalhes(id) {
+  console.log('Abrir detalhes da RNC:', id)
 }
 
-function formatDate(iso) {
-  if (!iso) return '-'
-  return new Date(iso).toLocaleDateString('pt-BR')
-}
-
-function formatLabel(chave) {
-  return chave
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase())
-}
-
-function formatValue(valor) {
-  if (typeof valor === 'boolean') return valor ? 'Sim' : 'Não'
-  if (Array.isArray(valor)) return valor.join(', ')
-  return valor
+function formatDate(dateObj) {
+  if (!dateObj) return '-'
+  const iso = typeof dateObj === 'object' && '$date' in dateObj ? dateObj.$date : dateObj
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
 }
 
 function statusLabel(status) {
@@ -142,7 +86,14 @@ const headers = [
   { text: 'Código Bolsa', value: 'bagCode' },
   { text: 'Lote', value: 'lotNumber' },
   { text: 'Status', value: 'status' },
-  { text: 'Data', value: 'createdAt' },
-  { text: 'Ações', value: 'actions', sortable: false }
+  { text: 'Data de Criação', value: 'createdAt' },
+  { text: 'Ações', value: 'actions', sortable: false, align: 'center' }
 ]
 </script>
+
+<style scoped>
+.v-card-title {
+  font-weight: 600;
+  font-size: 20px;
+}
+</style>
