@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { useComplaintsStore } from './complaints' // Certifique-se que o caminho esteja correto
+import { useComplaintsStore } from './complaints'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -14,7 +14,11 @@ export const useAuthStore = defineStore('auth', {
       this.token = payload.token
       this.user.role = payload.role
       this.user.name = payload.name
+
+      // ✅ Salva o token no localStorage para persistência entre rotas
+      localStorage.setItem('token', payload.token)
     },
+
     loadFromStorage() {
       const token = localStorage.getItem('token')
       if (token) {
@@ -28,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
         }
       }
     },
+
     logout() {
       this.token = null
       this.user.role = null

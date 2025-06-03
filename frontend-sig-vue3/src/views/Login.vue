@@ -66,23 +66,20 @@ async function onLogin() {
     })
 
     const token = res.data.token
-    localStorage.setItem('token', token)
-
-    // Decodifica o JWT para extrair dados do usuário
     const payload = JSON.parse(atob(token.split('.')[1]))
 
-    // Atualiza o estado do store auth
+    // ✅ Atualiza o store e salva no localStorage
     auth.setUser({
       token,
       role: payload.role,
       name: payload.name
     })
 
-    // Redireciona conforme role
+    // ✅ Redireciona conforme a role
     if (payload.role === 'SIG') {
-      router.push('/sig') // Rota SIG
+      router.push('/sig')
     } else {
-      router.push('/client') // Rota Client
+      router.push('/client')
     }
   } catch (err) {
     alert('Credenciais inválidas')
@@ -92,7 +89,6 @@ async function onLogin() {
 </script>
 
 <style scoped>
-/* (Mantém seu estilo atual) */
 .login-container {
   height: 100vh;
   display: flex;
