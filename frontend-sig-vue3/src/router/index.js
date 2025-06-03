@@ -7,7 +7,7 @@ import SigLayout from '@/views/SigLayout.vue'
 
 // Lazy loading de componentes CLIENTE
 const ClientMenu = () => import('@/views/ClientMenu.vue')
-const ClientComplaintList = () => import('@/views/ClientComplaintList.vue') // ✅ caminho corrigido
+const ClientComplaintList = () => import('@/views/ClientComplaintList.vue')
 const ComplaintFormView = () => import('@/views/ComplaintFormView.vue')
 const ComplaintDetail = () => import('@/views/ComplaintDetail.vue')
 
@@ -15,11 +15,13 @@ const ComplaintDetail = () => import('@/views/ComplaintDetail.vue')
 const SigMenu = () => import('@/views/SigMenu.vue')
 const SigList = () => import('@/views/SigList.vue')
 const SigPending = () => import('@/views/SigPending.vue')
+const SigComplaintDetail = () => import('@/views/SigComplaintDetail.vue') // ✅ nova rota
 
 const NotFound = () => import('@/views/NotFound.vue')
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
+
   {
     path: '/client',
     component: ClientLayout,
@@ -31,6 +33,7 @@ const routes = [
       { path: 'detail/:id', name: 'ClientDetail', component: ComplaintDetail, props: true }
     ]
   },
+
   {
     path: '/sig',
     component: SigLayout,
@@ -39,9 +42,10 @@ const routes = [
       { path: '', name: 'SigMenu', component: SigMenu },
       { path: 'list', name: 'SigList', component: SigList },
       { path: 'pending', name: 'SigPending', component: SigPending },
-      { path: 'detail/:id', name: 'SigDetail', component: ComplaintDetail, props: true }
+      { path: 'detail/:id', name: 'SigDetail', component: SigComplaintDetail, props: true } // ✅ detalhamento SIG
     ]
   },
+
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]
 

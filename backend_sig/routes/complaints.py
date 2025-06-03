@@ -6,13 +6,16 @@ from models.complaint import Complaint
 from bson import ObjectId
 from datetime import datetime
 import os
+import uuid
 
 complaints_bp = Blueprint('complaints', __name__)
 
+# Serve arquivos de upload (anexos)
 @complaints_bp.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
+# Listar reclamações (SIG vê todas, cliente vê só as suas)
 @complaints_bp.route('', methods=['GET'])
 @token_required
 def list_complaints():
@@ -21,19 +24,22 @@ def list_complaints():
     docs = mongo_client.db.complaints.find(query)
     return jsonify([Complaint(doc).to_dict() for doc in docs]), 200
 
+# Criar nova reclamação com anexos
 @complaints_bp.route('', methods=['POST'])
 @token_required
 def create_complaint():
     data = request.form.to_dict()
     files = request.files.getlist('attachments')
     paths = []
-    for f in files:
-        name = secure_filename(f.filename)
-        dest = os.path.join(current_app.config['UPLOAD_FOLDER'], name)
-        f.save(dest)
-        paths.append(dest)
 
-    # Preenchimento automático
+    for f in files:
+        # Garante nome único para evitar conflito de arquivos
+        unique_name = f"{uuid.uuid4().hex}_{secure_filename(f.filename)}"
+        dest_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_name)
+        f.save(dest_path)
+        paths.append(f'uploads/{unique_name}')  # Salva apenas o caminho relativo
+
+    # Preenchimento automático dos campos
     data.update({
         'attachments': paths,
         'customerId': request.user.get('sub'),
@@ -47,6 +53,7 @@ def create_complaint():
     mongo_client.db.complaints.insert_one(comp.to_dict())
     return jsonify({'message': 'Reclamação criada'}), 201
 
+# Obter uma reclamação específica (com validação de acesso)
 @complaints_bp.route('/<cid>', methods=['GET'])
 @token_required
 def get_complaint(cid):
@@ -60,6 +67,7 @@ def get_complaint(cid):
 
     return jsonify(Complaint(doc).to_dict()), 200
 
+# Atualizar uma reclamação
 @complaints_bp.route('/<cid>', methods=['PUT'])
 @token_required
 def update_complaint(cid):
@@ -68,6 +76,7 @@ def update_complaint(cid):
     mongo_client.db.complaints.update_one({'_id': ObjectId(cid)}, {'$set': data})
     return jsonify({'message': 'Atualizado'}), 200
 
+# Deletar uma reclamação
 @complaints_bp.route('/<cid>', methods=['DELETE'])
 @token_required
 def delete_complaint(cid):

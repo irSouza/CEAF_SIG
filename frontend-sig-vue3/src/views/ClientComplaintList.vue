@@ -9,20 +9,16 @@
       no-data-text="Nenhuma RNC encontrada"
       item-value="_id"
     >
-      <template #item="{ item, column }">
-        <template v-if="column.value === 'status'">
-          <v-chip :color="statusColor(item.status)" dark>
-            {{ statusLabel(item.status) }}
-          </v-chip>
-        </template>
+      <!-- Slot para status -->
+      <template #item-status="{ item }">
+        <v-chip :color="statusColor(item.status)" dark>
+          {{ statusLabel(item.status) }}
+        </v-chip>
+      </template>
 
-        <template v-else-if="column.value === 'createdAt'">
-          {{ formatDate(item.createdAt) }}
-        </template>
-
-        <template v-else>
-          {{ item[column.value] }}
-        </template>
+      <!-- Slot para data -->
+      <template #item-createdAt="{ item }">
+        {{ formatDate(item.createdAt) }}
       </template>
     </v-data-table>
   </v-container>
@@ -34,15 +30,12 @@ import { useComplaintsStore } from '@/store/complaints'
 
 const store = useComplaintsStore()
 
-// Carrega a lista assim que o componente monta
 onMounted(async () => {
   await store.listAll()
 })
 
-// Computa as RNCs carregadas
 const complaints = computed(() => store.complaints)
 
-// Cabeçalhos da tabela
 const headers = [
   { text: 'Descrição', value: 'description' },
   { text: 'Código Bolsa', value: 'bagCode' },
@@ -51,21 +44,18 @@ const headers = [
   { text: 'Data de Criação', value: 'createdAt' }
 ]
 
-// Formata data ISO para formato legível
 function formatDate(iso) {
   if (!iso) return '-'
   const d = new Date(iso)
   return d.toLocaleDateString()
 }
 
-// Traduz status para rótulo
 function statusLabel(status) {
   if (status === 'pending') return 'Pendente'
   if (status === 'resolved') return 'Resolvida'
   return status
 }
 
-// Define cor do status
 function statusColor(status) {
   if (status === 'pending') return 'orange'
   if (status === 'resolved') return 'green'
